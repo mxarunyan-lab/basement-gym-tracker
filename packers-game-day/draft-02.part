@@ -1,0 +1,99 @@
+(e.target.id==='textBtn'){
+    const txt=buildSummary();
+    const phone='__ARCHIE_PHONE__';
+    const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
+    const separator=isIOS?'&':'?';
+    const smsUrl=`sms:${phone}${separator}body=${encodeURIComponent(txt)}`;
+    window.location.href=smsUrl;
+    return;
+  }
+
+  if(e.target.id==='copyBtn'){
+    const txt=buildSummary();
+    let copied=false;
+    if(navigator.clipboard && window.isSecureContext){
+      try{await navigator.clipboard.writeText(txt);copied=true;}catch{}
+    }
+    if(!copied){
+      const helper=document.createElement('textarea');
+      helper.value=txt;
+      helper.setAttribute('readonly','');
+      helper.style.position='fixed';
+      helper.style.opacity='0';
+      helper.style.pointerEvents='none';
+      document.body.appendChild(helper);
+      helper.select();
+      helper.setSelectionRange(0,helper.value.length);
+      try{copied=document.execCommand('copy');}catch{}
+      helper.remove();
+    }
+    if(copied){
+      const btn=document.getElementById('copyBtn');
+      if(btn){
+        btn.textContent='✓ COPIED — SEND TO ARCHIE';
+        setTimeout(()=>{const b=document.getElementById('copyBtn');if(b)b.textContent='📋 Copy My Picks';},2200);
+      }
+    }else{
+      const preview=document.querySelector('.copy-preview');
+      if(preview) preview.open=true;
+      const summaryEl=document.getElementById('summaryText');
+      if(summaryEl){
+        const range=document.createRange();
+        range.selectNodeContents(summaryEl);
+        const sel=window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+      }
+    }
+    return;
+  }
+
+  const resetBtn=e.target.closest('[data-reset]');
+  if(resetBtn){
+    const host=document.getElementById(state.stage===0?'resetConfirmHome':'resetConfirmSummary');
+    if(host){
+      host.innerHTML=`<div class="reset-confirm">Start over and erase every saved rating, Franchise Pick and audible?<div class="reset-actions"><button data-cancel-reset>Keep My Draft</button><button class="danger" data-confirm-reset>Clear Everything</button></div></div>`;
+    }
+    return;
+  }
+
+  if(e.target.closest('[data-cancel-reset]')){
+    const box=e.target.closest('.reset-confirm');
+    if(box) box.remove();
+    return;
+  }
+
+  if(e.target.closest('[data-confirm-reset]')){
+    localStorage.removeItem(newKey);
+    localStorage.removeItem('runyanPackersDraft');
+    state.ratings={};
+    state.franchise={};
+    state.audibles={};
+    state.name='';
+    state.stage=0;
+    nameInput.value='';
+    nameInput.classList.remove('invalid');
+    nameError.classList.remove('show');
+    save();
+    render(true);
+    return;
+  }
+});
+app.addEventListener('input',e=>{if(e.target.dataset.audible){state.audibles[e.target.dataset.audible]=e.target.value;save();}});
+stageDots.addEventListener('click',e=>{
+  const dot=e.target.closest('[data-stage]');
+  if(!dot) return;
+  const target=Number(dot.dataset.stage);
+  if(target>0 && !ensureNameSelected()) return;
+  if(!canAccessStage(target)){
+    setNotice('Finish the current round by choosing a Franchise Pick first.');
+    return;
+  }
+  state.stage=target;
+  render();
+});
+
+render();
+</script>
+</body>
+</html>
