@@ -1,0 +1,58 @@
+name: Verify Packers Game Day Site
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify recipe API count and required recipes
+        shell: bash
+        run: |
+          set -euo pipefail
+          CHECK_URL='https://kxdoqurvgbavojexjsva.supabase.co/functions/v1/packers-game-day?check=1'
+          curl -fsSL "$CHECK_URL" -o /tmp/check.json
+          cat /tmp/check.json
+          python - <<'PY'
+          import json
+          d=json.load(open('/tmp/check.json'))
+          assert d['ok'] is True, d
+          assert d['recipes']==31, d
+          assert d['hasBuffalo'] is True, d
+          assert d['hasGrasshopper'] is True, d
+          assert d['hasMeatloafMelts'] is True, d
+          print('Recipe API verification passed:', d)
+          PY
+
+      - name: Verify complete recipe HTML
+        shell: bash
+        run: |
+          set -euo pipefail
+          URL='https://kxdoqurvgbavojexjsva.supabase.co/functions/v1/packers-game-day?page=recipes'
+          curl -fsSL "$URL" -o /tmp/recipes.html
+          count=$(grep -o '<details class="recipe"' /tmp/recipes.html | wc -l | tr -d ' ')
+          test "$count" = '31'
+          grep -q 'Brandy Old-Fashioned Glazed Meatballs' /tmp/recipes.html
+          grep -q 'Mini Wisconsin Hot Beef Sundaes' /tmp/recipes.html
+          grep -q 'Smoked Buffalo Chicken Pinwheels' /tmp/recipes.html
+          grep -q 'Mini Loaded Potato Cups' /tmp/recipes.html
+          grep -q 'Bloody Mary Steak Bites' /tmp/recipes.html
+          grep -q 'Grasshopper Pie' /tmp/recipes.html
+          grep -q 'Meatloaf Melts' /tmp/recipes.html
+          echo "Complete recipe HTML verification passed: $count recipes"
+
+      - name: Verify public Vercel loader
+        shell: bash
+        run: |
+          set -euo pipefail
+          URL='https://packers-game-day-menu-draft.vercel.app/'
+          curl -fsSL "$URL" -o /tmp/vercel.html
+          grep -q 'kxdoqurvgbavojexjsva.supabase.co/functions/v1/packers-game-day' /tmp/vercel.html
+          grep -q "mode === 'recipes'" /tmp/vercel.html
+          echo 'Vercel loader verification passed'
