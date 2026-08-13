@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#164b35">
+<title>Packers Game Day Recipe Book</title>
+<style>
+:root{--green:#164b35;--gold:#d4aa2d;--cream:#f6f0df;--paper:#fffaf1;--ink:#302d27;--muted:#746b5d;--line:#d7cdb8;--rust:#8d4d33;--soft:#eee5d2;--shadow:0 3px 12px rgba(48,40,25,.06)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--cream);color:var(--ink);font-family:Arial,Helvetica,sans-serif;line-height:1.6;font-size:17px}button,input,a{font:inherit}.hero{background:var(--green);color:white;border-bottom:7px solid var(--gold);padding:34px 18px 29px}.hero-inner{max-width:1020px;margin:auto;text-align:center}.kicker{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#f4d96a;margin-bottom:7px}.hero h1{font-family:Georgia,serif;font-size:clamp(35px,7vw,58px);font-weight:500;line-height:1.05;margin:0}.hero p{max-width:670px;margin:12px auto 0;color:#f6edda}.shell{max-width:1020px;margin:auto;padding:18px 14px 55px}.toolbar{position:sticky;top:0;z-index:5;padding:10px 0 12px;background:linear-gradient(var(--cream) 78%,rgba(246,240,223,0));display:grid;grid-template-columns:1fr auto;gap:9px}.search{width:100%;border:1px solid var(--line);border-radius:14px;background:#fffdf7;padding:14px 15px;color:var(--ink);box-shadow:0 2px 8px rgba(42,37,26,.05)}.search:focus{outline:3px solid rgba(212,170,45,.3);border-color:var(--gold)}.share-book{border:1px solid var(--line);border-radius:14px;background:var(--paper);color:var(--green);padding:12px 14px;white-space:nowrap;cursor:pointer}.intro{text-align:center;margin:7px auto 16px;color:var(--muted);max-width:720px}.round-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:17px 0 30px}.round-card{display:block;text-decoration:none;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:17px;padding:17px;box-shadow:var(--shadow);min-height:136px}.round-card:hover,.round-card:focus{border-color:var(--gold);outline:3px solid rgba(212,170,45,.15)}.round-num{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--rust)}.round-name{display:block;font-family:Georgia,serif;font-size:25px;font-weight:500;color:var(--green);line-height:1.1;margin:3px 0}.round-purpose{font-size:14px;color:var(--muted)}.round-count{display:inline-block;margin-top:9px;border-radius:999px;padding:4px 8px;background:#e9eee2;color:var(--green);font-size:12px}.section{scroll-margin-top:88px;margin:35px 0 44px}.section-head{display:flex;align-items:end;justify-content:space-between;gap:12px;border-bottom:3px solid var(--gold);padding-bottom:9px;margin-bottom:13px}.section-head h2{font-family:Georgia,serif;font-weight:500;color:var(--green);font-size:31px;line-height:1.1;margin:0}.section-head p{font-size:14px;color:var(--muted);margin:3px 0 0}.top-link{font-size:13px;color:var(--green);white-space:nowrap}.recipe-list{display:grid;gap:11px}.recipe{background:var(--paper);border:1px solid var(--line);border-radius:17px;box-shadow:var(--shadow);overflow:hidden;scroll-margin-top:90px}.recipe[open]{border-color:#c0ab7b}.recipe summary{list-style:none;padding:17px 18px;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;cursor:pointer}.recipe summary::-webkit-details-marker{display:none}.r-title{font-family:Georgia,serif;font-size:22px;font-weight:500;color:var(--green);line-height:1.2}.r-mini{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}.pill{font-size:12px;padding:4px 8px;border-radius:999px;background:var(--soft);color:#554e42}.open-label{font-size:13px;color:var(--green);white-space:nowrap}.recipe[open] .open-label::before{content:'Close recipe';font-size:13px}.recipe[open] .open-label{font-size:0}.recipe-body{border-top:1px solid var(--line);padding:17px 18px 21px}.meta-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.meta-card{background:#f0e7d5;border-radius:11px;padding:9px 10px;font-size:14px}.meta-card span{display:block;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}.makeahead,.note{border-radius:10px;padding:11px 12px;margin:12px 0;font-size:15px}.makeahead{background:#eaf0e4;border-left:4px solid var(--green)}.note{background:#f6e8bf;border-left:4px solid var(--gold)}.cols{display:grid;grid-template-columns:.85fr 1.3fr;gap:22px}.sub{font-family:Georgia,serif;font-size:20px;font-weight:500;color:var(--rust);margin:12px 0 6px}ul,ol{padding-left:23px;margin-top:5px}li{margin:7px 0}.actions{display:flex;gap:8px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:14px;margin-top:16px}.actions button{border:1px solid var(--line);background:#fffdf7;color:var(--green);border-radius:11px;padding:10px 13px;cursor:pointer}.actions .share{background:var(--green);color:white;border-color:var(--green)}.status{font-size:13px;color:var(--green);align-self:center}.search-empty{display:none;background:var(--paper);border:1px dashed var(--line);border-radius:16px;padding:24px;text-align:center;color:var(--muted);margin:15px 0}.hidden-search{display:none!important}footer{text-align:center;color:var(--muted);font-size:13px;padding:0 15px 40px}
+@media(max-width:760px){body{font-size:16px}.toolbar{grid-template-columns:1fr}.share-book{width:100%}.round-grid{grid-template-columns:1fr 1fr}.cols{grid-template-columns:1fr}.hero{padding-top:29px}.section-head{align-items:start}.meta-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:470px){.round-grid{grid-template-columns:1fr}.round-card{min-height:auto}.recipe summary{padding:15px}.recipe-body{padding:15px}.section-head h2{font-size:27px}}
+@media print{.toolbar,.round-grid,.intro,.actions,.top-link{display:none!important}body{background:white}.hero{background:white;color:black;border-bottom:2px solid black}.hero p,.kicker{color:black}.recipe{box-shadow:none;break-inside:avoid}.recipe-body{display:block!important}}
+</style>
+</head>
+<body>
+<header class="hero" id="top">
+<div class="hero-inner">
+<div class="kicker">Green Bay • Game Day</div>
+<h1>Packers Game Day Recipe Book</h1>
+<p>Every recipe from the menu draft — easy to browse by round and detailed when you need it.</p>
+</div>
+</header>
+<main class="shell">
+<div class="toolbar">
+<input id="search" class="search" type="search" placeholder="Search all 31 recipes or ingredients…" aria-label="Search recipes">
+<button id="shareBook" class="share-book">↗ Share Recipe Book</button>
+</div>
+<p class="intro">Pick a game-day round below, or just scroll. Every recipe is already here — tap a recipe name to open the full KaySo directions.</p>
+<nav class="round-grid" aria-label="Recipe rounds">
+<a class="round-card" href="#warm-up-pregame">
+<span class="round-num">Round 1 of 6</span>
+<span class="round-name">Warm-Up</span>
+<span class="round-purpose">Pregame appetizers</span>
+<br>
+<span class="round-count">5 recipes →</span>
+</a>
+<a class="round-card" href="#kickoff-main-event">
+<span class="round-num">Round 2 of 6</span>
+<span class="round-name">Kickoff</span>
+<span class="round-purpose">Main Event</span>
+<br>
+<span class="round-count">6 recipes →</span>
+</a>
+<a class="round-card" href="#halftime-sides">
+<span class="round-num">Round 3 of 6</span>
+<span class="round-name">Halftime</span>
+<span class="round-purpose">Sides</span>
+<br>
+<span class="round-count">5 recipes →</span>
+</a>
+<a class="round-card" href="#3rd-quarter-snack">
+<span class="round-num">Round 4 of 6</span>
+<span class="round-name">3rd Quarter</span>
+<span class="round-purpose">Game-Day Snack</span>
+<br>
+<span class="round-count">5 recipes →</span>
+</a>
+<a class="round-card" href="#4th-quarter-dessert">
+<span class="round-num">Round 5 of 6</span>
+<span class="round-name">4th Quarter</span>
+<span class="round-purpose">Dessert</span>
+<br>
+<span class="round-count">5 recipes →</span>
+</a>
+<a class="round-card" href="#overtime-after-lambeau">
+<span class="round-num">Round 6 of 6</span>
+<span class="round-name">Overtime</span>
+<span class="round-purpose">After Lambeau</span>
+<br>
+<span class="round-count">5 recipes →</span>
+</a>
+</nav>
+<div id="searchEmpty" class="search-empty">No recipes match that search. Try a recipe name or ingredient.</div>
+<section class="section" id="warm-up-pregame" data-section>
+<div class="section-head">
+<div>
+<h2>Warm-Up • Pregame appetizers</h2>
+<p>Start with the little things people keep reaching for. • 5 recipes</p>
+</div>
+<a class="top-link" href="#top">↑ Rounds</a>
+</div>
+<div class="recipe-list">
+<details class="recipe" id="recipe-0" data-search="brandy old-fashioned glazed meatballs warm-up / pregame 1 lb 80/20 ground beef 1/3 cup plain breadcrumbs 1 large egg 2 tbsp finely grated or minced onion 1 tbsp worcestershire sauce 1 tsp kosher salt 1/2 tsp black pepper 1/2 tsp garlic powder 1 tbsp neutral oil, if baking 2 tbsp butter 1/3 cup brandy 1/3 cup packed brown sugar 1/4 cup beef broth 1 1/2 tbsp worcestershire sauce 1 tbsp orange marmalade or 2 tsp orange juice concentrate (optional but very old-fashioned-ish) 4 dashes aromatic bitters 1 tsp dijon mustard pinch of black pepper">
+<summary>
+<div>
+<div class="r-title">Brandy Old-Fashioned Glazed Meatballs</div>
+<div class="r-mini">
+<span class="pill">⏱ 45 minutes</span>
+<span class="pill">Easy–Moderate</span>
+</div>
+</div>
+<span class="open-label">Open recipe</span>
+</summary>
+<div class="recipe-body">
+<div class="meta-grid">
+<div class="meta-card">
+<span>Serves</span>3 people • about 15 small meatballs</div>
+<div class="meta-card">
+<span>Total time</span>45 minutes</div>
+<div class="meta-card">
+<span>Difficulty</span>Easy–Moderate</div>
+<div class="meta-card">
+<span>Equipment</span>Sheet pan or smoker-safe pan; medium skillet/saucepan; instant-read thermometer helpful.</div>
+</div>
+<div class="makeahead">
+<b>Make-ahead:</b> Shape and bake/smoke the meatballs up to 1 day ahead. Rewarm them directly in the glaze.</div>
+<div class="cols">
+<div>
+<h3 class="sub">Ingredients</h3>
+<ul>
+<li>1 lb 80/20 ground beef</li>
+<li>1/3 cup plain breadcrumbs</li>
+<li>1 large egg</li>
+<li>2 tbsp finely grated or minced onion</li>
+<li>1 tbsp Worcestershire sauce</li>
+<li>1 tsp kosher salt</li>
+<li>1/2 tsp black pepper</li>
+<li>1/2 tsp garlic powder</li>
+<li>1 tbsp neutral oil, if baking</li>
+<li>2 tbsp butter</li>
+<li>1/3 cup brandy</li>
+<li>1/3 cup packed brown sugar</li>
+<li>1/4 cup beef broth</li>
+<li>1 1/2 tbsp Worcestershire sauce</li>
+<li>1 tbsp orange marmalade or 2 tsp orange juice concentrate (optional but very Old-Fashioned-ish)</li>
+<li>4 dashes aromatic bitters</li>
+<li>1 tsp Dijon mustard</li>
+<li>Pinch of black pepper</li>
+</ul>
+</div>
+<div>
+<h3 class="sub">Step-by-step</h3>
+<ol>
+<li>Heat the oven to 425°F, or set the smoker to 250°F. Line a sheet pan if baking.</li>
+<li>In a bowl, combine beef, breadcrumbs, egg, onion, Worcestershire, salt, pepper and garlic powder. Mix just until evenly combined; overmixing makes meatballs dense.</li>
+<li>Roll into 15 small meatballs, roughly 1 heaping tablespoon each. For the oven, lightly oil the pan and bake 12–15 minutes. For the smoker, smoke 35–45 minutes. Either way, cook until the centers reach 160°F.</li>
+<li>While they cook, melt butter in a skillet over medium heat. Add brandy carefully and let it bubble 1–2 minutes. Stir in brown sugar, broth, Worcestershire, marmalade, bitters, Dijon and pepper.</li>
+<li>Simmer the glaze 6–8 minutes, stirring occasionally, until glossy and just thick enough to coat a spoon.</li>
+<li>Add the cooked meatballs to the glaze. Toss gently and simmer 3–5 minutes so the glaze clings to every meatball.</li>
+<li>Transfer to a small warm serving dish and spoon the extra glaze over the top. Serve with toothpicks.</li>
+</ol>
+</div>
+</div>
+<div class="note">
