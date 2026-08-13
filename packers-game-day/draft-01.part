@@ -1,0 +1,323 @@
+y smoked tavern pizza cut into little squares for grabbing. Choose it here if you want pizza as the snack rather than as one of the Halftime sides.'],
+      ['pizza-rollups','Pizza Roll-Ups','Pizza dough rolled with sauce, pepperoni and mozzarella, sliced into spirals and baked until golden and melty. Homemade pizza-roll energy without frying anything.'],
+      ['ranch-pinwheels','Bacon-Cheddar Ranch Pinwheels','Soft tortilla pinwheels filled with bacon, sharp cheddar, scallions and a creamy ranch-seasoned filling. Chilled, make-ahead and easy to grab without making another hot dish.'],
+      ['party-rye','Wisconsin Party Rye Melts','Little cocktail rye toasts topped with savory sausage, sharp cheddar, onion, mustard and Worcestershire, then broiled until hot, melty and browned. Pure old-school Wisconsin party food.'],
+      ['sausage-balls','Baked Bacon-Cheddar Sausage Balls','Savory baked bites made with sausage, sharp cheddar, biscuit mix, bacon and scallions. Crisp around the edges, tender inside, and easy to serve with mustard or ranch.']
+    ]
+  },
+  {
+    id:'fourth', label:'4th Quarter', tag:'Dessert',
+    subtitle:'The sweet finish: chocolate, caramel, cookies, frozen custard and retro Wisconsin dessert energy.',
+    items:[
+      ['skillet-cookie','Brown Butter Chocolate-Chip Skillet Cookie + Frozen Custard','A giant warm brown-butter chocolate-chip cookie served straight from the skillet with vanilla frozen custard, hot fudge and caramel. Gooey middle, crisp edges, and made for sharing.'],
+      ['monster-sandwich','Monster Cookie Frozen-Custard Sandwiches','Big peanut-butter, oat and chocolate-chip cookies sandwiching thick vanilla frozen custard. Make them ahead, freeze them and pull them out when dessert time hits.'],
+      ['pretzel-nachos','Chocolate Pretzel Nachos','Crisp cinnamon-sugar chips and pretzel pieces piled with warm chocolate sauce, peanut-butter sauce, caramel and little scoops of frozen custard. A big shareable dessert tray instead of individual servings.'],
+      ['custard-mud-pie','Wisconsin Frozen Custard Mud Pie','A chocolate-cookie crust layered with chocolate and vanilla frozen custard, hot fudge and crushed Oreos. Cold, rich, make-ahead and definitely not cheesecake.'],
+      ['grasshopper','Grasshopper Pie','A retro Midwest favorite with a chocolate-cookie crust and cool mint-chocolate cream filling, finished with whipped cream and chocolate shavings. Very supper-club dessert, very make-ahead.']
+    ]
+  },
+  {
+    id:'overtime', label:'Overtime', tag:'After Lambeau',
+    subtitle:'Late-night insurance: something hot and easy to finish when you get home from the game and everyone suddenly wants food again.',
+    items:[
+      ['ham-sliders','Hot Ham, Swiss & Cheddar Sliders','Soft party rolls layered with ham, Swiss and cheddar, brushed with a buttery Dijon-Worcestershire topping and baked until hot and gooey. Assemble before leaving; bake when you get home.'],
+      ['postgame-pizza','Postgame Tavern Pizza','Have a tavern-style pizza prepped earlier — unbaked, par-baked or ready to reheat — so you can get hot, crispy pizza on the table quickly after Lambeau. It works whether or not pizza appears anywhere else in the draft.'],
+      ['roast-beef-sliders','Hot Roast Beef & Cheddar Sliders + Au Jus','Warm roast beef and cheddar baked on soft rolls, with hot au jus for dipping. Salty, beefy, simple to assemble ahead and exactly the kind of thing that sounds good late at night.'],
+      ['pizza-fries','Loaded Pizza Fries','Crispy fries piled with mozzarella, pepperoni and sausage, then baked until melty and served with warm pizza sauce for dipping. Late-night bar food you can throw together fast at home.'],
+      ['meatloaf-melts','Meatloaf Melts','If the Tavern Meatloaf wins the Main Event, turn the leftovers into hot sandwiches with Swiss or cheddar and caramelized onions on toasted bread. A conditional pick, but an excellent use of the winning main.']
+    ]
+  }
+];
+
+const ratings = [
+  ['first','❤️','First-Round Pick'],
+  ['roster','🏈','On the Roster'],
+  ['bench','🪑','Ride the Bench'],
+  ['cut','✂️','Cut from the Team']
+];
+const ratingLabels = {
+  first:'❤️ First-Round Pick',
+  roster:'🏈 On the Roster',
+  bench:'🪑 Ride the Bench',
+  cut:'✂️ Cut from the Team'
+};
+
+const newKey='packersGameDayMenuDraft';
+let saved = localStorage.getItem(newKey);
+if(!saved && localStorage.getItem('runyanPackersDraft')) saved = localStorage.getItem('runyanPackersDraft');
+const state = saved ? JSON.parse(saved) : {};
+state.ratings ||= {}; state.franchise ||= {}; state.audibles ||= {}; state.name ||= ''; state.stage ??= 0;
+
+const stages = [
+  {type:'welcome',label:'How It Works'},
+  ...rounds.map(r=>({type:'round',label:r.tag,round:r.id})),
+  {type:'summary',label:'Draft Board'}
+];
+
+const roundPurpose={
+  pregame:'APPETIZER',
+  main:'MAIN EVENT',
+  halftime:'SIDES',
+  third:'SNACK',
+  fourth:'DESSERT',
+  overtime:'AFTER LAMBEAU'
+};
+function roundIndex(roundId){return rounds.findIndex(r=>r.id===roundId);}
+function roundComplete(roundId){return !!state.franchise[roundId];}
+function allPreviousRoundsComplete(roundId){
+  const idx=roundIndex(roundId);
+  return idx<=0 || rounds.slice(0,idx).every(r=>roundComplete(r.id));
+}
+function canAccessStage(target){
+  if(target<=0) return true;
+  if(target>=stages.length-1) return rounds.every(r=>roundComplete(r.id));
+  const roundId=stages[target].round;
+  return allPreviousRoundsComplete(roundId);
+}
+
+
+const app=document.getElementById('app');
+const progressTitle=document.getElementById('progressTitle');
+const progressCount=document.getElementById('progressCount');
+const progressFill=document.getElementById('progressFill');
+const stageDots=document.getElementById('stageDots');
+const progressNotice=document.getElementById('progressNotice');
+const nameInput=document.getElementById('voterName');
+const nameError=document.getElementById('nameError');
+const allowedNames=['Archie','Brooke','Tracy'];
+if(!allowedNames.includes(state.name)) state.name='';
+nameInput.value=state.name;
+nameInput.addEventListener('change',()=>{state.name=nameInput.value;nameInput.classList.remove('invalid');nameError.classList.remove('show');save();});
+
+function save(){localStorage.setItem(newKey,JSON.stringify(state));}
+function titleFor(id){for(const r of rounds){const item=r.items.find(x=>x[0]===id); if(item)return item[1]} return id;}
+function ensureNameSelected(){
+  if(allowedNames.includes(state.name)) return true;
+  nameInput.classList.add('invalid');
+  nameError.classList.add('show');
+  nameInput.focus();
+  nameInput.scrollIntoView({behavior:'smooth',block:'center'});
+  return false;
+}
+function roundStatus(round){
+  const rated=round.items.filter(([id])=>state.ratings[id]).length;
+  const fp=state.franchise[round.id];
+  return {rated,total:round.items.length,fp};
+}
+function roundStatusHtml(round){
+  const s=roundStatus(round);
+  return `<div>Rated: ${s.rated} of ${s.total}</div><div>🏆 Franchise Pick: ${s.fp?titleFor(s.fp):'Not chosen yet'}</div><div class="save-note">✓ Saves automatically on this device</div>`;
+}
+function setNotice(msg=''){progressNotice.textContent=msg;}
+function clearRound(roundId){
+  const round=rounds.find(r=>r.id===roundId);
+  if(!round) return;
+  for(const [id] of round.items) delete state.ratings[id];
+  delete state.franchise[roundId];
+  delete state.audibles[roundId];
+  save();
+}
+
+function buildSummary(){
+  const who=allowedNames.includes(state.name)?state.name:'Name not selected';
+  const lines=[`${who.toUpperCase()}’S PACKERS GAME DAY MENU DRAFT`, ''];
+  for(const round of rounds){
+    lines.push(`🏈 ${round.tag.toUpperCase()} — ${round.label}`);
+    const fp=state.franchise[round.id];
+    lines.push(`🏆 Franchise Pick: ${fp?titleFor(fp):'No pick yet'}`);
+    for(const [value] of ratings){
+      // The Franchise Pick already has its own trophy line. Do not repeat it
+      // under First-Round Pick (or any other rating category) in the review/text.
+      const picks=round.items
+        .filter(i=>i[0]!==fp && state.ratings[i[0]]===value)
+        .map(i=>i[1]);
+      if(picks.length) lines.push(`${ratingLabels[value]}: ${picks.join('; ')}`);
+    }
+    const audible=(state.audibles[round.id]||'').trim();
+    if(audible) lines.push(`📣 Audible: ${audible}`);
+    lines.push('');
+  }
+  return lines.join('\n').trim();
+}
+
+function ratingGuide(){return `
+  <div class="rules-grid">
+    <div class="rule"><div class="rule-title">❤️ First-Round Pick</div><div class="mini">I really want this. Put it high on the board.</div></div>
+    <div class="rule"><div class="rule-title">🏈 On the Roster</div><div class="mini">Sounds good. I’d be happy if this makes the menu.</div></div>
+    <div class="rule"><div class="rule-title">🪑 Ride the Bench</div><div class="mini">I’d eat it, but it isn’t one of my favorites.</div></div>
+    <div class="rule"><div class="rule-title">✂️ Cut from the Team</div><div class="mini">Nope. Leave this one off the final menu.</div></div>
+    <div class="rule"><div class="rule-title">🏆 Franchise Pick</div><div class="mini">Your one winner for that round. You can still rate several foods First-Round Pick.</div></div>
+    <div class="rule"><div class="rule-title">📣 Call an Audible</div><div class="mini">Optional. Think we missed something better? Add your own idea.</div></div>
+  </div>`}
+
+function renderWelcome(){
+  const hasDraft=Object.keys(state.ratings).length||Object.keys(state.franchise).length||Object.values(state.audibles).some(v=>(v||'').trim());
+  return `<section class="panel welcome active">
+    <h2>🏈 How the Draft Works</h2>
+    <p>Rate each food, then choose <span style="color:var(--green);font-weight:600">ONE 🏆 Franchise Pick</span> for the round. Your Franchise Pick is your favorite and is required before you can advance.</p>
+    <p>You’ll draft one stage at a time: Warm-Up, Kickoff, Halftime, 3rd Quarter, 4th Quarter and Overtime. Every option includes a short food description before you vote.</p>
+    ${ratingGuide()}
+    <div class="tip">✓ Your picks save automatically on this device. You can go Back, change a pick, or close the page and come back later.</div>
+    <div class="nav"><button class="next" data-next>Start the Draft →</button></div>
+    <div class="recipe-link-row"><a class="recipe-link" href="?page=recipes" target="_blank" rel="noopener">🍽️ Browse the Game Day Recipe Book</a></div>
+    ${hasDraft?'<div class="summary-actions"><button class="reset" data-reset>↻ Start Over</button></div>':''}
+    <div id="resetConfirmHome"></div>
+  </section>`;
+}
+
+function renderRound(round){
+  const fp=state.franchise[round.id];
+  const nextDisabled=!fp;
+  const idx=roundIndex(round.id)+1;
+  return `<section class="panel round active">
+    <div class="round-head"><span class="round-tag">${round.tag}</span><h2>${round.label}</h2><p class="round-sub">${round.subtitle}</p></div>
+    <div class="round-tools">
+      <div class="round-tools-copy"><span class="round-tools-title">Your Picks This Round</span><span class="mini">${roundStatusHtml(round)}</span></div>
+      <button class="clear-round" data-clear-round="${round.id}">🧹 Clear This Round’s Picks</button>
+    </div>
+    ${round.items.map(([id,title,desc])=>`
+      <article class="food ${fp===id?'franchise':''}">
+        <h3>${title}</h3>
+        <p>${desc}</p>
+        <div class="ratings">
+          ${ratings.map(([v,icon,label])=>`<button class="rating ${state.ratings[id]===v?'active':''}" data-rate="${id}" data-value="${v}"><span>${icon}</span>${label}</button>`).join('')}
+        </div>
+        ${fp===id?'<div class="franchise-badge">🏆 YOUR FRANCHISE PICK</div>':''}
+        <button class="franchise-btn ${fp===id?'active':''}" data-franchise="${round.id}" data-item="${id}">🏆 ${fp===id?'Your Franchise Pick':'Make My Franchise Pick'}</button>
+      </article>`).join('')}
+    <div class="audible"><label>📣 Call an Audible <span class="mini" style="font-weight:400">(Optional)</span></label><span class="mini">Got a better idea for this stage? Throw it onto the board.</span><textarea data-audible="${round.id}" placeholder="My idea instead…">${state.audibles[round.id]||''}</textarea></div>
+    ${nextDisabled?'<div class="next-help">🏆 Choose your Franchise Pick to continue.</div>':''}
+    <div class="nav"><button class="back" data-back>← Back</button><button class="next" data-next ${nextDisabled?'disabled':''}>${round.id==='overtime'?'See My Draft Board →':'Next Round →'}</button></div>
+  </section>`;
+}
+
+function renderSummary(){
+  const summary=buildSummary();
+  return `<section class="panel summary active">
+    <h2>🏆 Your Draft Board</h2>
+    <p class="round-sub">Review your lineup below. When it looks right, tap <span style="color:var(--green);font-weight:600">Text My Draft to Archie</span> and your finished picks will open in a message addressed to Archie.</p>
+    <div class="summary-grid">
+      ${rounds.map((round,i)=>{const fp=state.franchise[round.id];return `<div class="summary-card"><div class="summary-card-top"><div><h3>${round.tag} • ${round.label}</h3><div class="summary-pick">🏆 ${fp?titleFor(fp):'No Franchise Pick'}</div></div><button class="edit-round" data-edit-stage="${i+1}">Edit</button></div></div>`}).join('')}
+    </div>
+    <details class="copy-preview"><summary>Preview what will be copied</summary><div class="summary-text" id="summaryText">${escapeHtml(summary)}</div></details>
+    <div class="summary-actions"><button class="text-draft" id="textBtn">📱 Text My Draft to Archie</button></div>
+    <div class="recipe-link-row"><a class="recipe-link" href="?page=recipes" target="_blank" rel="noopener">🍽️ View All Game Day Recipes</a></div>
+    <div class="mini" style="text-align:center;margin-top:7px">Opens a text to Archie with your Draft Board already filled in — just tap Send.</div>
+    <div class="summary-actions"><button class="copy" id="copyBtn">📋 Copy My Picks</button><button class="reset" data-reset>↻ Start Over</button></div>
+    <div id="resetConfirmSummary"></div>
+    <div class="nav"><button class="back" data-back>← Back to Overtime</button></div>
+  </section>`;
+}
+
+function escapeHtml(str){return str.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));}
+
+function renderProgress(){
+  const max=stages.length-1;
+  const stage=stages[state.stage];
+  if(stage.type==='round'){
+    const round=rounds.find(r=>r.id===stage.round);
+    const idx=roundIndex(round.id)+1;
+    progressTitle.textContent=`${round.tag.toUpperCase()} • ${roundPurpose[round.id]||round.label.toUpperCase()}`;
+    progressCount.textContent=`${idx} OF ${rounds.length}`;
+  }else if(stage.type==='summary'){
+    progressTitle.textContent='DRAFT BOARD • COMPLETE';
+    progressCount.textContent='DONE';
+  }else{
+    progressTitle.textContent='HOW IT WORKS';
+    progressCount.textContent='START';
+  }
+  progressFill.style.width=`${(state.stage/max)*100}%`;
+  stageDots.innerHTML=stages.map((s,i)=>{const ok=canAccessStage(i);return `<button class="stage-dot ${i<state.stage?'done':''} ${i===state.stage?'active':''}" data-stage="${i}" aria-label="Go to ${s.label}" title="${s.label}" ${ok?'':'disabled'}></button>`}).join('');
+  setNotice('');
+}
+
+function scrollToCurrentEvent(){
+  const target=document.querySelector('.progress-card');
+  if(target){
+    const top=target.getBoundingClientRect().top+window.scrollY-8;
+    window.scrollTo({top,behavior:'smooth'});
+  }
+}
+
+function render(scrollToEvent=true){
+  state.stage=Math.max(0,Math.min(state.stage,stages.length-1));
+  const stage=stages[state.stage];
+  if(stage.type==='welcome') app.innerHTML=renderWelcome();
+  if(stage.type==='round') app.innerHTML=renderRound(rounds.find(r=>r.id===stage.round));
+  if(stage.type==='summary') app.innerHTML=renderSummary();
+  renderProgress(); save();
+  if(scrollToEvent) requestAnimationFrame(scrollToCurrentEvent);
+}
+
+app.addEventListener('click',async e=>{
+  const rate=e.target.closest('[data-rate]');
+  if(rate){
+    const id=rate.dataset.rate;
+    const v=rate.dataset.value;
+    const round=rounds.find(r=>r.items.some(i=>i[0]===id));
+    const isFranchise=round && state.franchise[round.id]===id;
+
+    // A Franchise Pick is always a First-Round Pick. If someone deliberately
+    // rates it lower, remove the trophy so the two choices never contradict.
+    if(isFranchise && v!=='first'){
+      delete state.franchise[round.id];
+      state.ratings[id]=v;
+    }else{
+      state.ratings[id]=state.ratings[id]===v?undefined:v;
+      if(isFranchise && !state.ratings[id]) state.ratings[id]='first';
+    }
+    save();render(false);return;
+  }
+
+  const fp=e.target.closest('[data-franchise]');
+  if(fp){
+    const sec=fp.dataset.franchise;
+    const id=fp.dataset.item;
+    state.franchise[sec]=id;
+    state.ratings[id]='first';
+    save();render(false);return;
+  }
+
+  if(e.target.closest('[data-next]')){
+    if(state.stage===0 && !ensureNameSelected()) return;
+    const current=stages[state.stage];
+    if(current.type==='round' && !roundComplete(current.round)){
+      setNotice('Choose a Franchise Pick before moving to the next round.');
+      return;
+    }
+    state.stage=Math.min(state.stage+1,stages.length-1);
+    render();return;
+  }
+
+  if(e.target.closest('[data-back]')){
+    state.stage=Math.max(state.stage-1,0);
+    render();return;
+  }
+
+  const editBtn=e.target.closest('[data-edit-stage]');
+  if(editBtn){
+    state.stage=Number(editBtn.dataset.editStage);
+    render();return;
+  }
+
+  const clearBtn=e.target.closest('[data-clear-round]');
+  if(clearBtn){
+    if(clearBtn.dataset.armed==='true'){
+      clearRound(clearBtn.dataset.clearRound);
+      render(false);
+    }else{
+      clearBtn.dataset.armed='true';
+      clearBtn.classList.add('armed');
+      clearBtn.textContent='Tap Again to Clear Round';
+      setTimeout(()=>{
+        if(document.body.contains(clearBtn)){
+          clearBtn.dataset.armed='';
+          clearBtn.classList.remove('armed');
+          clearBtn.textContent='🧹 Clear This Round’s Picks';
+        }
+      },3500);
+    }
+    return;
+  }
+
+  if
